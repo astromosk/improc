@@ -247,9 +247,12 @@ if __name__ == '__main__':
     if len(images) > 0:
     
         # pull telescope+instrument header keywords from first image
+        print('Checking image ' + images[0] + ' for configuration parameters')
         telescope = fits.getval(images[0], 'TELESCOP', ext=0)
         instrument = fits.getval(images[0], 'INSTRUME', ext=0)
         tel_inst = telescope + '_' + instrument
+        print('   From image header: TELESCOP = ' + telescope)
+        print('   From image header: INSTRUME = ' + instrument)
 
         # use tel_inst to retrieve configuration params in astrom_config.py
         params = astrom_config.parameters(tel_inst)
