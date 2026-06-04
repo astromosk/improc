@@ -60,7 +60,9 @@ import numpy as np
 from astropy.utils.exceptions import AstropyWarning
 from astropy.io import fits
 from astropy.table import Table
-#from astropy.wcs import WCS
+from astropy import units as u
+from astropy.coordinates import SkyCoord
+
 from matplotlib import pyplot as plt
 
 import astrom_config
@@ -124,9 +126,17 @@ def astrom_solve(image,params):
     dat_obs = fits.getval(image, 'DATE-OBS', ext=0)     # UT date of observation
     filt = fits.getval(image, 'FILTER', ext=0)          # Filter
     obj = fits.getval(image, 'OBJECT', ext=0)           # Object
-    ra = fits.getval(image, 'RA', ext=0)    # right ascension
-    dec = fits.getval(image, 'DEC', ext=0)  # declination
+    ra_header = fits.getval(image, 'RA', ext=0)    # right ascension
+    dec_header = fits.getval(image, 'DEC', ext=0)  # declination
     pix_scale = params['pix_scale']         # unbinned pixel scale
+   
+    # convert RA/DEC from Deg to H:M:S if needed
+    if params['radec_units']:
+        coord = SkyCoord(ra=ra_header * u.degree, dec=dec_header * u.degree, frame='icrs')
+        ra = coord.ra.to_string(unit=u.hourangle, sep=':', pad=True, precision=2)
+        dec = coord.dec.to_string(unit=u.degree, sep=':', pad=True, alwayssign=True, precision=2)
+    else:
+        ra, dec = ra_header, dec_header
    
     # on-chip bin factor
     if isinstance(params['binning'][0],int):

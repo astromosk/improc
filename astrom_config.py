@@ -18,6 +18,7 @@ hall_nasa42 = {
     'binning': ('ADELX_01', 'ADELY_01'),    # x and y bin factors
     'search_radius': 0.5,           # query catalog within radius of field center [deg]
     'pix_scale': 0.368,              # unbinned pixel scale [arcsec]
+    'radec_units': False,             # boolean to convert RA/Dec deg to H:M:S
     'poly_n': 3                     # polynomial order of SIP WCS correction
 }
 
@@ -26,6 +27,7 @@ ldt_lmi = {
     'binning': ('CCDSUM#blank0', 'CCDSUM#blank1'),    # x and y bin factors
     'search_radius': 0.1,           # query catalog within radius of field center [deg]
     'pix_scale': 0.12,               # unbinned pixel scale [arcsec]
+    'radec_units': False,             # boolean to convert RA/Dec deg to H:M:S
     'poly_n': 3                     # polynomial order of SIP WCS correction
 }
 
@@ -34,6 +36,7 @@ pj1m_moravian = {
     'binning': ('XBINNING', 'YBINNING'),    # x and y bin factors
     'search_radius': 0.5,           # query catalog within radius of field center [deg]
     'pix_scale': 0.13,               # unbinned pixel scale [arcsec]
+    'radec_units': True,             # boolean to convert RA/Dec deg to H:M:S
     'poly_n': 3                     # polynomial order of SIP WCS correction
 }
 
