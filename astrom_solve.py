@@ -6,7 +6,7 @@ Astrometry Solver
 
 Uses local installation of astrometry.net to derive astrometric solutions
 
-Instrument specific parameters are defined in associated astrom_config.py
+Instrument specific parameters are defined in associated improc_config.py
 
 This script will create new versions of images with a _solved.fits suffix
 
@@ -65,7 +65,7 @@ from astropy.coordinates import SkyCoord
 
 from matplotlib import pyplot as plt
 
-import astrom_config
+import improc_config
 
 ############################
 # Generate plot of residuals
@@ -264,8 +264,8 @@ if __name__ == '__main__':
         print('   From image header: TELESCOP = ' + telescope)
         print('   From image header: INSTRUME = ' + instrument)
 
-        # use tel_inst to retrieve configuration params in astrom_config.py
-        params = astrom_config.parameters(tel_inst)
+        # use tel_inst to retrieve configuration params in improc_config.py
+        params = improc_config.parameters(tel_inst)
     
         # solve images
         for im in images:
