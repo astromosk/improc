@@ -72,7 +72,10 @@ def fwhm_plot(image,data,background,sources,boxsize):
     sym_size = [0 if f < 0 else f for f in norm_flux]
 
     # all sources used to fit PSF
-    ax.scatter(sources['x_centroid'],sources['y_centroid'], s=sym_size,marker='o',color='slateblue',label='Bright sources, N = '+str(len(sources)))
+    # account for 10% buffer around image edges with xoff and yoff
+    xoff = data.shape[1] // 8
+    yoff = data.shape[0] // 8
+    ax.scatter(sources['x_centroid']+xoff,sources['y_centroid']+yoff, s=sym_size,marker='o',color='slateblue',label='N = '+str(len(sources))+' brightest sources')
     ax.legend(loc='upper left')
 
     # Set aspect and ticks of the main Axes.
@@ -80,8 +83,8 @@ def fwhm_plot(image,data,background,sources,boxsize):
     ax.tick_params(axis='both', direction='in')
 
     # main plot limits
-    ax.set_xlim(0,data.shape[1])
-    ax.set_ylim(0,data.shape[0])
+    ax.set_xlim(0,data.shape[1]+2*xoff)
+    ax.set_ylim(0,data.shape[0]+2*yoff)
 
     # create new Axes on the right and top of the current Axes for margin plots
     divider = make_axes_locatable(ax)
@@ -128,7 +131,7 @@ def fwhm_plot(image,data,background,sources,boxsize):
     model_radial = fit_model(row['x_fit'] + r, row['y_fit'])
 
     # circle star in main plot
-    ax.plot(sources['x_centroid'][ind],sources['y_centroid'][ind],marker='o',ms=8,mec='firebrick',mfc='none')
+    ax.plot(sources['x_centroid'][ind]+xoff,sources['y_centroid'][ind]+yoff,marker='o',ms=8,mec='firebrick',mfc='none')
 
     # data and PSF model in margin plot
     ax_psf.tick_params(axis='both', direction='in')
@@ -190,7 +193,13 @@ def find_fwhm(image,params):
    
     # read fits data
     hdu = fits.open(image)
-    data = hdu[0].data
+    
+    # define 10% buffer around edge to ignore sources
+    x0 = hdu[0].data.shape[1] // 10
+    x1 = 9 * hdu[0].data.shape[1] // 10
+    y0 = hdu[0].data.shape[0] // 10
+    y1 = 9 * hdu[0].data.shape[0] // 10
+    data = hdu[0].data[y0:y1,x0:x1]
 
     # derive background, 3 sigma clipped
     sig = 3.0
