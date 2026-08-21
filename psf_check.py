@@ -97,6 +97,7 @@ def fwhm_plot(image,data,background,sources,boxsize):
         ind = 0    # first (brightest) star
     else:
         ind = int(len(sources)/2)   # middle star in list
+        ind=0
     cutout = Cutout2D(data - background, (sources['x_centroid'][ind],sources['y_centroid'][ind]), boxsize)
     # if source is on the edge of frame, a full cutout is not possible
     # try the next star in the list until a full cutout is possible
@@ -223,7 +224,7 @@ def find_fwhm(image,params):
     sources.write(image.replace('.fits','_psf.dat'), format='ascii.fixed_width_two_line', overwrite=True)
 
     # summary data
-    psf_dat = (image, date_obs, ra, dec, filt, obj, len(sources), np.mean(fwhm), np.mean(sources['roundness2']), np.mean(sources['roundness1']))
+    psf_dat = (image, date_obs, ra, dec, filt, obj, len(sources), np.mean(fwhm), np.std(fwhm), np.mean(sources['roundness2']), np.mean(sources['roundness1']))
              
     # create plot of FWHM across image
     if do_plot:
@@ -263,7 +264,7 @@ if __name__ == '__main__':
     #   = 0 = perfectly round
     #   < 0 = extended along x axis
     #   > 0 = extended along y axis
-    summary = Table(names=('image', 'UT Date','RA', 'Dec', 'filter', 'object', 'N_sources', 'fwhm_mean', 'xy_round_mean', 'diag_round_mean'), dtype=(str,str,str,str,str,str,int,float,float,float))
+    summary = Table(names=('image', 'UT Date','RA', 'Dec', 'filter', 'object', 'N_sources', 'fwhm_mean', 'fwhm_stdev', 'xy_round_mean', 'diag_round_mean'), dtype=(str,str,str,str,str,str,int,float,float,float,float))
 
     # retrieve list of images to analyze
     # recursively scan through all sub-directories relative to img_path
@@ -299,7 +300,7 @@ if __name__ == '__main__':
             # add image data to summary table
             summary.add_row(summary_row)
             
-            print(im,' Mean FWHM (pix) =',f"{summary[-1]['fwhm_mean']:.3f}")
+            print(im,' Mean FWHM +/- stdev (pix) =',f"{summary[-1]['fwhm_mean']:.3f}",'+/-',f"{summary[-1]['fwhm_stdev']:.3f}")
                         
         # write all summary data to file
         summary.write('psf_summary.txt', format='ascii.fixed_width_two_line', formats={'fwhm_mean':'0.3f', 'xy_round_mean':'0.3f', 'diag_round_mean':'0.3f'}, overwrite=True)
@@ -307,7 +308,6 @@ if __name__ == '__main__':
         # FWHM across all images
         mean_fwhm = np.mean(summary['fwhm_mean'])
         std_fwhm = np.std(summary['fwhm_mean'])
-
         
         # print some information to terminal
         print('\nPSF SUMMARY')
