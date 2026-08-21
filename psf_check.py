@@ -60,7 +60,7 @@ def fwhm_plot(image,data,background,sources,boxsize):
     
     # setup figure
     fig, ax = plt.subplots(figsize=(6,6),layout='constrained')
-    fig.suptitle(image+r', PSF Analysis: $\overline{FWHM}$ = '+f'{np.mean(sources['fwhm']):.2f}',size=11)
+    fig.suptitle(image+r', PSF Analysis: $\overline{FWHM}$ = '+f'{np.mean(sources["fwhm"]):.2f}',size=11)
 
     # marker size scaled by 2 * normalized flux of sources
     norm_flux = 2*sources['flux'] / np.mean(sources['flux'])
