@@ -50,6 +50,11 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 import improc_config
 
+# supress warnings related to fit convergence
+import warnings
+warnings.filterwarnings(
+    "ignore", message=r'.*One or more fit\(s\) may not have converged.*')
+    
 ############################
 # Generate plot of residuals
 ############################
@@ -93,6 +98,11 @@ def fwhm_plot(image,data,background,sources,boxsize):
     else:
         ind = int(len(sources)/2)   # middle star in list
     cutout = Cutout2D(data - background, (sources['x_centroid'][ind],sources['y_centroid'][ind]), boxsize)
+    # if source is on the edge of frame, a full cutout is not possible
+    # try the next star in the list until a full cutout is possible
+    while cutout.shape != (boxsize,boxsize):
+        ind +=1
+        cutout = Cutout2D(data - background, (sources['x_centroid'][ind],sources['y_centroid'][ind]), boxsize)
     xcut, ycut = cutout.input_position_cutout   # star's position within the thumbnail
     
     # fit star
@@ -149,6 +159,7 @@ def fwhm_plot(image,data,background,sources,boxsize):
 
     # save figure
     plt.savefig(image.replace('.fits','_psf.png'),dpi=150)
+    plt.close(fig)
     plt.clf()
     
     return
@@ -257,6 +268,7 @@ if __name__ == '__main__':
     # retrieve list of images to analyze
     # recursively scan through all sub-directories relative to img_path
     images = glob.glob(img_path+'**/*'+imsuff, recursive=True)
+    print('Processing '+str(len(images))+' images...\n')
 
     # loop through images and measure PSF FWHMs
     if len(images) > 0:
