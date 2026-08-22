@@ -140,7 +140,7 @@ def fwhm_plot(image,data,background,sources,boxsize):
     ax_psf.set_xlabel('radius (pix)')
     ax_psf.set_ylabel('counts')
 
-    # thumnail inset of selected star
+    # thumbnail inset of selected star
     ax_thumb = fig.add_axes([0.765, 0.766, 0.18, 0.18])
     ax_thumb.imshow(cutout.data, cmap="gray_r", origin="lower", norm='log')
     aperture = plt.Circle((xcut, ycut), sources['fwhm'][ind],fill=False,ec='firebrick')
@@ -151,7 +151,7 @@ def fwhm_plot(image,data,background,sources,boxsize):
     # margin plot of PSF FWHM across y axis
     ax_fwhm.yaxis.set_tick_params(labelleft=False)
     ax_fwhm.set_xlabel('FWHM')
-    ax_fwhm.scatter(sources['fwhm'],sources['y_centroid'],color='k',s=1,label='PSF Roundness, y-axis')
+    ax_fwhm.scatter(sources['fwhm'],sources['y_centroid']+yoff,color='k',s=1,label='PSF Roundness, y-axis')
 
     ax_fwhm.yaxis.set_label_position("right")
     ax_fwhm.yaxis.tick_right()
