@@ -19,7 +19,8 @@ hall_nasa42 = {
     'search_radius': 0.5,           # query catalog within radius of field center [deg]
     'pix_scale': 0.368,              # unbinned pixel scale [arcsec]
     'radec_units': False,             # boolean to convert header RA/Dec deg to H:M:S
-    'poly_n': 3                     # polynomial order of SIP WCS correction
+    'poly_n': 3,                     # polynomial order of SIP WCS correction
+    'max_counts': 45000             # max counts before non-linear
 }
 
 # LDT, LMI
@@ -28,7 +29,8 @@ ldt_lmi = {
     'search_radius': 0.1,           # query catalog within radius of field center [deg]
     'pix_scale': 0.12,               # unbinned pixel scale [arcsec]
     'radec_units': False,             # boolean to convert header RA/Dec deg to H:M:S
-    'poly_n': 3                     # polynomial order of SIP WCS correction
+    'poly_n': 3,                     # polynomial order of SIP WCS correction
+    'max_counts': 50000             # max counts before non-linear
 }
 
 # PJ1m, Moravian
@@ -37,7 +39,8 @@ pj1m_moravian = {
     'search_radius': 0.5,           # query catalog within radius of field center [deg]
     'pix_scale': 0.13,               # unbinned pixel scale [arcsec]
     'radec_units': True,             # boolean to convert header RA/Dec deg to H:M:S
-    'poly_n': 3                     # polynomial order of SIP WCS correction
+    'poly_n': 3,                     # polynomial order of SIP WCS correction
+    'max_counts': 50000             # max counts before non-linear
 }
 
 ##########################################################################
