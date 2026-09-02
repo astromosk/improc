@@ -65,10 +65,10 @@ def fwhm_plot(image,data,background,sources,boxsize):
     
     # setup figure
     fig, ax = plt.subplots(figsize=(6,6),layout='constrained')
-    fig.suptitle(image+r', PSF Analysis: $\overline{FWHM}$ = '+f'{np.mean(sources["fwhm"]):.2f}',size=11)
+    fig.suptitle(image+r', PSF Analysis: $\overline{FWHM}$ = '+f'{np.median(sources["fwhm"]):.2f}',size=11)
 
     # marker size scaled by 2 * normalized flux of sources
-    norm_flux = 2*sources['flux'] / np.mean(sources['flux'])
+    norm_flux = 2*sources['flux'] / np.median(sources['flux'])
     sym_size = [0 if f < 0 else f for f in norm_flux]
 
     # all sources used to fit PSF
@@ -175,6 +175,8 @@ def fwhm_plot(image,data,background,sources,boxsize):
 def find_fwhm(image,params):
 
     # retrieve header keywords for processing and summary file
+    # assumes these header keywords are standard across instruments
+    # could move these to the parameter definintions in improc_config.py
     date_obs = fits.getval(image, 'DATE-OBS', ext=0)     # UT date of observation
     filt = fits.getval(image, 'FILTER', ext=0)          # Filter
     obj = fits.getval(image, 'OBJECT', ext=0)           # Object
@@ -233,7 +235,7 @@ def find_fwhm(image,params):
     sources.write(image.replace('.fits','_psf.dat'), format='ascii.fixed_width_two_line', overwrite=True)
 
     # summary data
-    psf_dat = (image, date_obs, ra, dec, filt, obj, len(sources), np.mean(fwhm), np.std(fwhm), np.mean(sources['roundness2']), np.mean(sources['roundness1']))
+    psf_dat = (image, date_obs, ra, dec, filt, obj, len(sources), np.median(fwhm), np.std(fwhm), np.median(sources['roundness2']), np.median(sources['roundness1']))
              
     # create plot of FWHM across image
     if do_plot:
@@ -273,7 +275,7 @@ if __name__ == '__main__':
     #   = 0 = perfectly round
     #   < 0 = extended along x axis
     #   > 0 = extended along y axis
-    summary = Table(names=('image', 'UT Date','RA', 'Dec', 'filter', 'object', 'N_sources', 'fwhm_mean', 'fwhm_stdev', 'xy_round_mean', 'diag_round_mean'), dtype=(str,str,str,str,str,str,int,float,float,float,float))
+    summary = Table(names=('image', 'UT Date','RA', 'Dec', 'filter', 'object', 'N_sources', 'fwhm_med', 'fwhm_stdev', 'xy_round_med', 'diag_round_med'), dtype=(str,str,str,str,str,str,int,float,float,float,float))
 
     # retrieve list of images to analyze
     # recursively scan through all sub-directories relative to img_path
@@ -309,19 +311,19 @@ if __name__ == '__main__':
             # add image data to summary table
             summary.add_row(summary_row)
             
-            print(im,' Mean FWHM +/- stdev (pix) =',f"{summary[-1]['fwhm_mean']:.3f}",'+/-',f"{summary[-1]['fwhm_stdev']:.3f}")
+            print(im,' Median FWHM +/- stdev (pix) =',f"{summary[-1]['fwhm_med']:.3f}",'+/-',f"{summary[-1]['fwhm_stdev']:.3f}")
                         
         # write all summary data to file
-        summary.write('psf_summary.txt', format='ascii.fixed_width_two_line', formats={'fwhm_mean':'0.3f', 'xy_round_mean':'0.3f', 'diag_round_mean':'0.3f'}, overwrite=True)
+        summary.write('psf_summary.txt', format='ascii.fixed_width_two_line', formats={'fwhm_med':'0.3f', 'xy_round_med':'0.3f', 'diag_round_med':'0.3f'}, overwrite=True)
         
         # FWHM across all images
-        mean_fwhm = np.mean(summary['fwhm_mean'])
-        std_fwhm = np.std(summary['fwhm_mean'])
+        med_fwhm = np.median(summary['fwhm_med'])
+        std_fwhm = np.std(summary['fwhm_med'])
         
         # print some information to terminal
         print('\nPSF SUMMARY')
         print(str(len(summary)) + ' files in path ' + img_path)
-        print('Mean FWHM (pixels) = ' + f'{mean_fwhm:.3f}')
+        print('Median FWHM (pixels) = ' + f'{med_fwhm:.3f}')
         print('Std. dev. FWHM (pixels) = ' + f'{std_fwhm:.3f}')
         print('\nSummary file saved to psf_summary.txt')
         print('\nPSF CHECK DONE')
