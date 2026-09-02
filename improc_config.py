@@ -10,7 +10,7 @@ import sys
 ######################################
 # telescope/instrument configurations
 #
-implemented_instruments = ['Lowell Hall 1.1-m f/8_E2V CCD-231 4096x4112', 'DCT_lmi', 'PJ1M_PJ1m_Moravian']
+implemented_instruments = ['Lowell Hall 1.1-m f_E2V CCD-231 4096x4112', 'Lowell Hall 1.1-m f/8_E2V CCD-231 4096x4112', 'DCT_lmi', 'PJ1M_PJ1m_Moravian']
 
 
 # Hall 42", NASA42
@@ -47,6 +47,7 @@ pj1m_moravian = {
 # translate TELESCOP+'_'+INSTRUME keywords into parameter set defined here
 #
 params = {
+    'Lowell Hall 1.1-m f_E2V CCD-231 4096x4112':    hall_nasa42,
     'Lowell Hall 1.1-m f/8_E2V CCD-231 4096x4112':  hall_nasa42,
     'DCT_lmi':                                      ldt_lmi,
     'PJ1M_PJ1m_Moravian':                           pj1m_moravian
