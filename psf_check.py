@@ -100,7 +100,7 @@ def fwhm_plot(image,data,background,sources,boxsize):
         ind = 0    # first (brightest) star
     else:
         ind = int(len(sources)/2)   # middle star in list
-        ind=0
+        #ind=0       # first (brightest) star
     cutout = Cutout2D(data - background, (sources['x_centroid'][ind],sources['y_centroid'][ind]), boxsize)
     # if source is on the edge of frame, a full cutout is not possible
     # try the next star in the list until a full cutout is possible
@@ -219,10 +219,23 @@ def find_fwhm(image,params):
         background = bkg.background
         std = bkg.background_rms_median
 
-    # extract sources from background subtracted image
+    # extract up to 100 sources from background subtracted image
+    # include cut on valid source sharpness (0.3,0.8) to reject cosmic rays and noise spikes
     threshold = 5.0 * std   # source detection threshold
-    daofind = DAOStarFinder(threshold, fwhm=2.5,n_brightest=100,exclude_border=True,peak_max=max_counts)
+    daofind = DAOStarFinder(threshold, fwhm=2.5,n_brightest=100,peak_max=max_counts,sharpness_range=(0.3,0.8))
     sources = daofind(data-background) # astropy Table
+    
+    # filter out any sources below threshold (needed because threshold is applied to kernel-conlved image)
+    sources = sources[sources['peak'] >= threshold]
+    
+    # check this is a good image based on number of sources
+    if len(sources) < 10:
+        print('   WARNING: 10 or fewer sources found in image '+image)
+    if len(sources) == 0:
+        print('   NO SOURCES found in image '+image)
+        psf_dat = (image, date_obs, ra, dec, filt, obj, len(sources), 0, 0, 0, 0)
+        
+        return psf_dat
 
     # list of (x, y) coordinates of sources
     xypos = zip(sources['x_centroid'],sources['y_centroid'])
@@ -313,6 +326,9 @@ if __name__ == '__main__':
             
             print(im,' Median FWHM +/- stdev (pix) =',f"{summary[-1]['fwhm_med']:.3f}",'+/-',f"{summary[-1]['fwhm_stdev']:.3f}")
                         
+        # sort table by image name
+        summary.sort('image')
+
         # write all summary data to file
         summary.write('psf_summary.txt', format='ascii.fixed_width_two_line', formats={'fwhm_med':'0.3f', 'xy_round_med':'0.3f', 'diag_round_med':'0.3f'}, overwrite=True)
         
