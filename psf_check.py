@@ -182,6 +182,7 @@ def find_fwhm(image,params):
     obj = fits.getval(image, 'OBJECT', ext=0)           # Object
     ra_header = fits.getval(image, 'RA', ext=0)    # right ascension
     dec_header = fits.getval(image, 'DEC', ext=0)  # declination
+    focus = fits.getval(image, params['focus'], ext=0)  # declination
     pix_scale = params['pix_scale']         # unbinned pixel scale
     max_counts = params['max_counts']         # max counts before non-linear
 
@@ -233,7 +234,7 @@ def find_fwhm(image,params):
         print('   WARNING: 10 or fewer sources found in image '+image)
     if len(sources) == 0:
         print('   NO SOURCES found in image '+image)
-        psf_dat = (image, date_obs, ra, dec, filt, obj, len(sources), 0, 0, 0, 0)
+        psf_dat = (image, date_obs, ra, dec, filt, focus, obj, len(sources), 0, 0, 0, 0)
         
         return psf_dat
 
@@ -248,7 +249,7 @@ def find_fwhm(image,params):
     sources.write(image.replace('.fits','_psf.dat'), format='ascii.fixed_width_two_line', overwrite=True)
 
     # summary data
-    psf_dat = (image, date_obs, ra, dec, filt, obj, len(sources), np.median(fwhm), np.std(fwhm), np.median(sources['roundness2']), np.median(sources['roundness1']))
+    psf_dat = (image, date_obs, ra, dec, filt, focus, obj, len(sources), np.median(fwhm), np.std(fwhm), np.median(sources['roundness2']), np.median(sources['roundness1']))
              
     # create plot of FWHM across image
     if do_plot:
@@ -288,7 +289,7 @@ if __name__ == '__main__':
     #   = 0 = perfectly round
     #   < 0 = extended along x axis
     #   > 0 = extended along y axis
-    summary = Table(names=('image', 'UT Date','RA', 'Dec', 'filter', 'object', 'N_sources', 'fwhm_med', 'fwhm_stdev', 'xy_round_med', 'diag_round_med'), dtype=(str,str,str,str,str,str,int,float,float,float,float))
+    summary = Table(names=('image', 'UT Date','RA', 'Dec', 'filter', 'focus', 'object', 'N_sources', 'fwhm_med', 'fwhm_stdev', 'xy_round_med', 'diag_round_med'), dtype=(str,str,str,str,str,float,str,int,float,float,float,float))
 
     # retrieve list of images to analyze
     # recursively scan through all sub-directories relative to img_path
@@ -326,8 +327,8 @@ if __name__ == '__main__':
             
             print(im,' Median FWHM +/- stdev (pix) =',f"{summary[-1]['fwhm_med']:.3f}",'+/-',f"{summary[-1]['fwhm_stdev']:.3f}")
                         
-        # sort table by image name
-        summary.sort('image')
+        # sort table by focus value
+        summary.sort('focus')
 
         # write all summary data to file
         summary.write('psf_summary.txt', format='ascii.fixed_width_two_line', formats={'fwhm_med':'0.3f', 'xy_round_med':'0.3f', 'diag_round_med':'0.3f'}, overwrite=True)
