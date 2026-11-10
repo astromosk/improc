@@ -292,6 +292,9 @@ if __name__ == '__main__':
             if os.path.isfile(im.replace('.fits','_FAILED')):
                 failed.append(summary_row)
             
+        # sort table by UT time stamp
+        summary.sort(['UT Date'])
+            
         # write all summary data to file
         summary.write('astrom_summary.txt', format='ascii.fixed_width_two_line', formats={'Max_pix_residual':'0.3f', 'Mean_pix_residual':'0.3f'}, overwrite=True)
         
