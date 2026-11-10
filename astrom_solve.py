@@ -263,12 +263,26 @@ if __name__ == '__main__':
         tel_inst = telescope + '_' + instrument
         print('   From image header: TELESCOP = ' + telescope)
         print('   From image header: INSTRUME = ' + instrument)
-
+        
         # use tel_inst to retrieve configuration params in improc_config.py
         params = improc_config.parameters(tel_inst)
     
-        # solve images
+        # loop through images
         for im in images:
+        
+            # add header keywords if missing for certain instruments
+            if tel_inst == 'Peggy and Eric Johnson 1m Telescope_Once-ler':
+                with fits.open(im, mode='update') as hdul:
+                
+                    hdr = hdul[0].header # the primary HDU header
+                    
+                    # set keywords
+                    hdr['OBJECT'] = 'Test'
+                    hdr['FOCUSPOS'] = 5000
+                    hdr['RA'] = hdr['TELRA']
+                    hdr['DEC'] = hdr['TELDEC']
+
+            # astrometrically solve each image individually
             summary_row = astrom_solve(im,params)
             
             # add image data to summary table

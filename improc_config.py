@@ -8,9 +8,9 @@ Image Processing Configuation Script
 import sys
 
 ######################################
-# telescope/instrument configurations
+# TELESCOP_INSTRUME configurations
 #
-implemented_instruments = ['Lowell Hall 1.1-m f_E2V CCD-231 4096x4112', 'Lowell Hall 1.1-m f/8_E2V CCD-231 4096x4112', 'DCT_lmi', 'PJ1M_PJ1m_Moravian']
+implemented_instruments = ['Lowell Hall 1.1-m f_E2V CCD-231 4096x4112', 'Lowell Hall 1.1-m f/8_E2V CCD-231 4096x4112', 'DCT_lmi', 'PJ1M_PJ1m_Moravian', 'Peggy and Eric Johnson 1m Telescope_Once-ler']
 
 
 # Hall 42", NASA42
@@ -46,6 +46,17 @@ pj1m_moravian = {
     'max_counts': 50000             # max counts before non-linear
 }
 
+# PJ1m, Once-ler
+pj1m_onceler = {
+    'binning': ('BINNINGX', 'BINNINGY'),    # x and y bin factors
+    'focus': 'FOCUSPOS',            # header keyword for focus value
+    'search_radius': 0.5,           # query catalog within radius of field center [deg]
+    'pix_scale': 0.13,               # unbinned pixel scale [arcsec]
+    'radec_units': True,             # boolean to convert header RA/Dec deg to H:M:S
+    'poly_n': 3,                     # polynomial order of SIP WCS correction
+    'max_counts': 50000             # max counts before non-linear
+}
+
 ##########################################################################
 # translate TELESCOP+'_'+INSTRUME keywords into parameter set defined here
 #
@@ -53,7 +64,8 @@ params = {
     'Lowell Hall 1.1-m f_E2V CCD-231 4096x4112':    hall_nasa42,
     'Lowell Hall 1.1-m f/8_E2V CCD-231 4096x4112':  hall_nasa42,
     'DCT_lmi':                                      ldt_lmi,
-    'PJ1M_PJ1m_Moravian':                           pj1m_moravian
+    'PJ1M_PJ1m_Moravian':                           pj1m_moravian,
+    'Peggy and Eric Johnson 1m Telescope_Once-ler': pj1m_onceler
 }
 
 ######################
